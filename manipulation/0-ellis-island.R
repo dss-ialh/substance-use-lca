@@ -27,7 +27,7 @@ requireNamespace("DT", quietly=TRUE) # for dynamic tables
 # ---- declare-globals ---------------------------------------------------------
 # link to the source of the location mapping
 # path_input <- "./data-unshared/raw/SearchVariables.csv"
-path_input <- "./data-unshared/raw/coverage.csv"
+path_input <- "./data-unshared/raw/LCA_LABELS.CSV"
 # test whether the file exists / the link is good
 testit::assert("File does not exist", base::file.exists(path_input))
 # declare where you will store the product of this script
@@ -35,8 +35,8 @@ testit::assert("File does not exist", base::file.exists(path_input))
 path_save <- "./data-unshared/derived/dto-1"
 # See definitions of commonly  used objects in:
 source("./manipulation/object-glossary.R")   # object definitions
-path_save_meta <- "./data-unshared/meta/coverage-live.csv"
-path_input_meta <- "./data-public/meta/coverage-dead.csv"
+# path_save_meta <- "./data-unshared/meta/coverage-live.csv"
+# path_input_meta <- "./data-public/meta/coverage-dead.csv"
 
 # path_save_meta <- "./data-unshared/meta/memory-live.csv"
 # path_input_meta <- "./data-public/meta/memory-dead.csv"
@@ -45,14 +45,22 @@ path_input_meta <- "./data-public/meta/coverage-dead.csv"
 # functions, the use of which is localized to this script
 
 # ---- load-data ---------------------------------------------------------------
-ds <- readr::read_csv(path_input,skip = 2) %>% as.data.frame() 
-ds <- ds %>% tibble::as_tibble()
+ds0 <- readr::read_csv(path_input,skip = 0 ) %>% as.data.frame() 
+ds0 <- ds0 %>% tibble::as_tibble()
 # ds <- readr::read_csv(path_input) %>% as.data.frame() 
 
 # ---- inspect-data -----------------------------------------------------------
-ds %>% dplyr::glimpse()
+ds0 %>% dplyr::glimpse()
 
 # ---- tweak-data -------------------------------------------------------------
+names(ds0) <- tolower( names(ds0) )
+
+
+ds <- ds0 %>% 
+  dplyr::select_(.dots = c("id", "female", "ses", "age0", "illd_0", "mj_0", "cig_0", "hed_0"))
+
+ds %>% dplyr::glimpse()
+
 # identify the function of variables with respect to THIS wide-long tranformation
 variables_static <- common_stem
 variables_dynamic <- setdiff(colnames(ds), variables_static)
